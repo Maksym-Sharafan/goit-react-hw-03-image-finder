@@ -16,7 +16,6 @@ const Status = {
 
 export default class ImageGallery extends Component {
   state = {
-    page: 1,
     perPage: 12,
     images: null,
     error: null,
@@ -29,7 +28,7 @@ export default class ImageGallery extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { searchImages } = this.props;
-    const { perPage, page } = this.state;
+    const { perPage } = this.state;
     const prevName = prevProps.searchImages;
     const prevPage = prevState.perPage;
     const nextPage = perPage;
@@ -45,7 +44,7 @@ export default class ImageGallery extends Component {
       this.setState({ status: Status.PENDING });
 
       api
-        .handleApi(searchImages, perPage, page)
+        .handleApi(searchImages, perPage)
         .then(res => {
           this.setState({ images: res.hits, status: Status.RESOLVED });
         })
