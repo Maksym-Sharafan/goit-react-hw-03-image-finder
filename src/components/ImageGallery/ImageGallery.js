@@ -16,37 +16,45 @@ const Status = {
 
 export default class ImageGallery extends Component {
   state = {
-    perPage: 12,
-    images: null,
+    currentPage: 1,
+    images: [],
     error: null,
     status: Status.IDLE,
   };
 
   componentDidMount() {
-    this.setState({ perPage: 12 });
+    this.setState({
+      currentPage: 1,
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
     const { searchImages } = this.props;
-    const { perPage } = this.state;
+    const { currentPage } = this.state;
     const prevName = prevProps.searchImages;
-    const prevPage = prevState.perPage;
-    const nextPage = perPage;
+    const prevPage = prevState.currentPage;
+    const nextPage = currentPage;
 
     if (prevName !== searchImages) {
-      this.setState({ perPage: 12 });
+      this.setState({
+        currentPage: 1,
+        images: [],
+      });
     }
 
     if (
-      (prevName !== searchImages && perPage === 12) ||
+      (prevName !== searchImages && currentPage === 1) ||
       prevPage !== nextPage
     ) {
       this.setState({ status: Status.PENDING });
 
       api
-        .handleApi(searchImages, perPage)
-        .then(res => {
-          this.setState({ images: res.hits, status: Status.RESOLVED });
+        .handleApi(searchImages, currentPage)
+        .then(response => {
+          this.setState(prev => ({
+            images: [...prev.images, ...response.hits],
+            status: Status.RESOLVED,
+          }));
         })
         .catch(error =>
           this.setState({ error: error, status: Status.REJECTED }),
@@ -60,7 +68,7 @@ export default class ImageGallery extends Component {
   }
 
   onIncrementPage = () => {
-    this.setState({ perPage: this.state.perPage + 12 });
+    this.setState({ currentPage: this.state.currentPage + 1 });
   };
 
   render() {
@@ -90,10 +98,15 @@ export default class ImageGallery extends Component {
       return (
         <>
           <ul className="ImageGallery">
-            <ImageGalleryItem
-              dataImages={images}
-              onClick={this.handleOpenModal}
-            />
+            {images.map(image => (
+              <ImageGalleryItem
+                key={image.webformatURL}
+                littleImage={image.webformatURL}
+                largeImage={image.largeImageURL}
+                id={image.id}
+                tags={image.tags}
+              />
+            ))}
           </ul>
           {images.length > 0 && <Button onClick={this.onIncrementPage} />}
         </>

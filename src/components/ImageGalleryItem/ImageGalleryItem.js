@@ -20,25 +20,23 @@ export default class ImageGalleryItem extends Component {
   };
 
   render() {
-    const { dataImages } = this.props;
+    const { littleImage, largeImage, id, tags } = this.props;
 
     return (
       <>
-        {dataImages &&
-          dataImages.map(({ id, webformatURL, tags, largeImageURL }) => (
-            <li
-              className="ImageGalleryItem"
-              key={id}
-              id={id}
-              onClick={() => this.onImageClick(largeImageURL)}
-            >
-              <img
-                src={webformatURL}
-                alt={tags}
-                className="ImageGalleryItem-image"
-              />
-            </li>
-          ))}
+        <li
+          className="ImageGalleryItem"
+          key={id}
+          id={id}
+          onClick={() => this.onImageClick(largeImage)}
+        >
+          <img
+            src={littleImage}
+            alt={tags}
+            className="ImageGalleryItem-image"
+          />
+        </li>
+
         {this.state.showModal && (
           <Modal onClose={this.toggleModal}>
             <img src={this.state.largeImg} alt="" />
